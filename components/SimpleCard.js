@@ -6,28 +6,26 @@ import RecipePage from "./RecipePage";
 
 const SimpleCard = ({ recipe }) => {
   return (
-    <View>
-      <Card containerStyle={{ width: 170, margin: 8 }}>
-        <Card.Image
-          style={{ padding: 0, marginBottom: 10 }}
-          source={{
-            uri: `${recipe.recipe.image}`,
-          }}
-        />
-        <Text bold style={{ marginBottom: 10 }}>
-          {recipe["recipe"]["label"]}
+    <Card containerStyle={{ width: 170, margin: 8 }}>
+      <Card.Image
+        style={{ padding: 0, marginBottom: 10 }}
+        source={{
+          uri: `${recipe.recipe.image}`,
+        }}
+      />
+      <Text bold style={{ marginBottom: 10 }}>
+        {recipe["recipe"]["label"]}
+      </Text>
+      <View style={styles.description}>
+        <Text style={{ marginBottom: 10, color: "green" }}>
+          {recipe.recipe.calories.toFixed(2)} kcal
         </Text>
-        <View style={styles.description}>
-          <Text style={{ marginBottom: 10, color: "green" }}>
-            {recipe.recipe.calories.toFixed(2)} kcal
-          </Text>
-          <Button
-            title="more info"
-            onPress={() => <RecipePage recipe={recipe.recipe} />}
-          />
-        </View>
-      </Card>
-    </View>
+        <Button
+          title="more info"
+          onPress={() => <RecipePage recipe={recipe.recipe} />}
+        />
+      </View>
+    </Card>
   );
 };
 

@@ -1,12 +1,10 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import SimpleCard from "../components/SimpleCard";
-import { Input, Text, SearchBar, Card, Button } from "react-native-elements";
+import { Input, Text, SearchBar } from "react-native-elements";
 import Axios from "axios";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import RecipePage from "../components/RecipePage";
-import { useNavigation } from "@react-navigation/native";
 
 const data = [
   { label: "Alcohol-free", value: "alcohol-free" },
@@ -27,7 +25,7 @@ const data = [
   { label: "No oil added", value: "No-oil-added" },
 ];
 
-const RecipeScreen = ({ navigation }) => {
+const RecipeScreen = () => {
   const APP_ID = "649cb008";
   const APP_KEY = "04796101597a3f030b3136e77d1e0837";
   const [recipes, setRecipes] = useState([]);
@@ -105,35 +103,7 @@ const RecipeScreen = ({ navigation }) => {
         >
           {recipes !== [] ? (
             recipes.map((recipe) => {
-              return (
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Recipe page", {
-                      recipeImage: recipe.recipe.image,
-                      recipeName: recipe.recipe.label,
-                      recipeSource: recipe.recipe.source,
-                      recipeIngredients: recipe.recipe.ingredientLines,
-                    })
-                  }
-                >
-                  <Card containerStyle={{ width: 170, margin: 8 }}>
-                    <Card.Image
-                      style={{ padding: 0, marginBottom: 10 }}
-                      source={{
-                        uri: `${recipe.recipe.image}`,
-                      }}
-                    />
-                    <Text bold style={{ marginBottom: 10 }}>
-                      {recipe["recipe"]["label"]}
-                    </Text>
-                    <View style={styles.description}>
-                      <Text style={{ marginBottom: 10, color: "green" }}>
-                        {recipe.recipe.calories.toFixed(2)} kcal
-                      </Text>
-                    </View>
-                  </Card>
-                </TouchableOpacity>
-              );
+              return <SimpleCard recipe={recipe} />;
             })
           ) : (
             <Text>recipe</Text>

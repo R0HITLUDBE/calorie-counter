@@ -12,15 +12,8 @@ import {
 import Axios from "axios";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import {
-  setDoc,
-  collection,
-  getDocs,
-  doc,
-  addDoc,
-  Timestamp,
-} from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const data = [
   { label: "Alcohol-free", value: "alcohol-free" },
@@ -41,8 +34,7 @@ const data = [
   { label: "No oil added", value: "No-oil-added" },
 ];
 
-const BreakfastScreen = () => {
-  let breakfastList = [];
+const LunchScreen = () => {
   const APP_ID = "2d70a1fd";
   const APP_KEY = "210a31c6688d94318813fca4e37caea3";
   const [breakfast, setBreakfast] = useState([]);
@@ -50,8 +42,6 @@ const BreakfastScreen = () => {
   const [selected, setSelected] = useState();
   const [query, setQuery] = useState("");
   const [foodId, setFoodId] = useState("");
-  const [label, setLabel] = useState("");
-  const [uri, setUri] = useState("");
   const [nutrients, setNutrients] = useState();
 
   // const url = `https://api.edamam.com/api/food-database/v2/parser?ingr=${query}&app_id=${APP_ID}&app_key=${APP_KEY}&cuisineType=Indian&more=True`;
@@ -59,9 +49,6 @@ const BreakfastScreen = () => {
   var options = {
     method: "GET",
     url: "https://api.edamam.com/api/food-database/v2/parser",
-    headers: {
-      Accept: "application/json",
-    },
     params: {
       ingr: query,
       app_id: APP_ID,
@@ -76,7 +63,7 @@ const BreakfastScreen = () => {
     method: "POST",
     url: "https://api.edamam.com/api/food-database/v2/nutrients",
     headers: {
-      Accept: "application/json",
+      accept: "application/json",
       "content-type": "application/json",
     },
     params: {
@@ -86,8 +73,8 @@ const BreakfastScreen = () => {
     data: {
       ingredients: [
         {
-          quantity: 1,
-          foodId: `${foodId}`,
+          quantity: 100,
+          foodId: foodId,
         },
       ],
     },
@@ -97,45 +84,37 @@ const BreakfastScreen = () => {
     var result = await Axios.request(options)
       .then((result) => {
         setBreakfast(result.data.hints);
-        console.log(result.data.hints);
+        // console.log(result.data.hints);
       })
-      .catch((error) => console.error(error.message));
-  };
-
-  const setFood = async (response) => {
-    try {
-      const docRef = await addDoc(
-        collection(db, "food", auth.currentUser.uid, "breakfast"),
-        {
-          label: label,
-          uri: uri,
-          nutrients: nutrients ? nutrients : response.food.nutrients,
-          date: Timestamp.fromDate(new Date()),
-        }
-      );
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.log(e);
-    }
+      .catch((error) => console.error(error));
   };
 
   const getNutrientsInfo = async (response) => {
     var result = await Axios.request(ingredientsOptions)
       .then((result) => {
         setNutrients(result.data.totalNutrients);
-        console.log("nutrients", result.data.totalNutrients);
+        console.log("nutrients", result.data);
       })
-      .catch((error) => console.error(error));
-
-    setFood(response);
+      .then(async () => {
+        try {
+          const docRef = await addDoc(collection(db, "breakfast"), {
+            label: response.food.label,
+            uri: response.food.image,
+            nutrients: nutrients,
+          });
+          console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+          console.log(e);
+        }
+      })
+      .catch((e) => console.error(e));
   };
 
   useEffect(() => {
     const fetchbreakfast = async () => {
       try {
-        const querySnapshot = await getDocs(
-          collection(db, "food", auth.currentUser.uid, "breakfast")
-        );
+        const breakfastList = [];
+        const querySnapshot = await getDocs(collection(db, "breakfast"));
         querySnapshot.forEach((doc) => {
           console.log("doc data uri", doc.data().uri);
           const { label, uri, nutrients } = doc.data();
@@ -217,10 +196,8 @@ const BreakfastScreen = () => {
                       name="add-circle-outline"
                       type="ionicon"
                       color="#517fa4"
-                      onPress={() => {
+                      onPress={async () => {
                         setFoodId(response.food.foodId);
-                        setLabel(response.food.label);
-                        setUri(response.food.image);
                         getNutrientsInfo(response);
                       }}
                     />
@@ -246,7 +223,7 @@ const BreakfastScreen = () => {
   );
 };
 
-export default BreakfastScreen;
+export default LunchScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,44 +1,25 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, View } from "react-native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Button, Text, Input } from "react-native-elements";
 import { useState } from "react";
 import { useLayoutEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase";
-import { AuthContext } from "../components/AuthProvider";
-import { async } from "@firebase/util";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { auth } from "../firebase";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const context = useContext(AuthContext);
-  const { goal, activityLevel, gender, height, weight } = context;
   useLayoutEffect(() => {
     navigation.setOptions({
       headerBackTitle: "Login",
     });
   }, [navigation]);
 
-  useEffect(() => {
-    console.log("details", goal, activityLevel, gender, height, weight);
-  }, [name]);
-
   const register = async () => {
     try {
-      createUserWithEmailAndPassword(auth, email, password).then((cred) => {
-        return setDoc(doc(db, "users", cred.user.uid), {
-          name: name,
-          email: email,
-          gender: gender,
-          height: height,
-          weight: weight,
-          activityLevel: activityLevel,
-          goal: goal,
-        });
-      });
+      createUserWithEmailAndPassword(auth, email, password);
     } catch (err) {}
   };
 
@@ -74,7 +55,7 @@ const RegisterScreen = ({ navigation }) => {
         containerStyle={styles.button}
         raised
         title="Register"
-        onPress={() => register()}
+        onPress={() => register(email, password)}
       />
     </KeyboardAvoidingView>
   );

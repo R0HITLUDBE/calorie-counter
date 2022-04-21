@@ -1,27 +1,19 @@
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-} from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
 import Onboarding from "react-native-onboarding-swiper";
-import { Text, Icon } from "react-native-elements";
-import { RadioButton, TextInput } from "react-native-paper";
-import { AuthContext } from "../components/AuthProvider";
+import { CheckBox, Text } from "react-native-elements";
 
 const OnboardingScreen = ({ navigation }) => {
-  const context = useContext(AuthContext);
-  const { goal, setGoal } = context;
-  const { activityLevel, setActivityLevel } = context;
-  const { gender, setGender } = context;
-  const { height, setHeight } = context;
-  const { weight, setWeight } = context;
+  const [looseweight, setLooseweight] = useState(false);
+  const [gainweight, setGainweight] = useState(false);
+  const [buildmuscle, setBuildmuscle] = useState(false);
 
-  useEffect(() => {
-    console.log(gender);
-  }, [gender]);
+  const [goal, setGoal] = useState(0);
+
+  const [low, setLow] = useState(false);
+  const [moderate, setModerate] = useState(false);
+  const [high, setHigh] = useState(false);
+  const [veryhigh, setVeryhigh] = useState(false);
 
   return (
     <Onboarding
@@ -38,29 +30,47 @@ const OnboardingScreen = ({ navigation }) => {
           ),
           title: "What's your goal",
           subtitle: (
-            <RadioButton.Group
-              onValueChange={(value) => setGoal(value)}
-              value={goal}
-            >
-              <RadioButton.Item
-                style={styles.checkBox}
-                mode="ios"
-                value="loose weight"
-                label="loose weight"
+            <>
+              <CheckBox
+                title="Loose Weight"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                checked={looseweight}
+                onPress={() => {
+                  setLooseweight(!looseweight);
+                  setGainweight(false);
+                  setBuildmuscle(false);
+                }}
+                center={false}
+                containerStyle={styles.checkBox}
               />
-              <RadioButton.Item
-                style={styles.checkBox}
-                mode="ios"
-                value="gain weight"
-                label="gain weight"
+              <CheckBox
+                title="Gain Muscle"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                containerStyle={styles.checkBox}
+                center={false}
+                checked={gainweight}
+                onPress={() => {
+                  setLooseweight(false);
+                  setGainweight(!gainweight);
+                  setBuildmuscle(false);
+                }}
               />
-              <RadioButton.Item
-                style={styles.checkBox}
-                mode="ios"
-                value="build muscle"
-                label="build muscle"
+              <CheckBox
+                title="Build Muscle"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                containerStyle={styles.checkBox}
+                center={false}
+                checked={buildmuscle}
+                onPress={() => {
+                  setLooseweight(false);
+                  setGainweight(false);
+                  setBuildmuscle(!buildmuscle);
+                }}
               />
-            </RadioButton.Group>
+            </>
           ),
         },
         // page 2
@@ -74,37 +84,64 @@ const OnboardingScreen = ({ navigation }) => {
           ),
           title: "What's your activity level",
           subtitle: (
-            <View style={{ width: "50%" }}>
-              <RadioButton.Group
-                onValueChange={(value) => setActivityLevel(value)}
-                value={activityLevel}
-              >
-                <RadioButton.Item
-                  style={styles.checkBox}
-                  mode="ios"
-                  value="low"
-                  label="low"
-                />
-                <RadioButton.Item
-                  mode="ios"
-                  style={styles.checkBox}
-                  value="moderate"
-                  label="moderate"
-                />
-                <RadioButton.Item
-                  mode="ios"
-                  style={styles.checkBox}
-                  value="high"
-                  label="high"
-                />
-                <RadioButton.Item
-                  mode="ios"
-                  style={styles.checkBox}
-                  value="very high"
-                  label="very high"
-                />
-              </RadioButton.Group>
-            </View>
+            <>
+              <CheckBox
+                title="Low"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                checked={low}
+                center={false}
+                onPress={() => {
+                  setLow(!low);
+                  setModerate(false);
+                  setHigh(false);
+                  setVeryhigh(false);
+                }}
+                containerStyle={styles.checkBox}
+              />
+              <CheckBox
+                title="Moderate"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                center={false}
+                containerStyle={styles.checkBox}
+                checked={moderate}
+                onPress={() => {
+                  setLow(false);
+                  setModerate(!moderate);
+                  setHigh(false);
+                  setVeryhigh(false);
+                }}
+              />
+              <CheckBox
+                title="High"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                center={false}
+                containerStyle={styles.checkBox}
+                checked={high}
+                onPress={() => {
+                  setLow(false);
+                  setModerate(false);
+                  setHigh(!high);
+                  setVeryhigh(false);
+                }}
+              />
+              <CheckBox
+                title="Very High"
+                checkedIcon="dot-circle-o"
+                uncheckedIcon="circle-o"
+                center={false}
+                containerStyle={styles.checkBox}
+                checked={veryhigh}
+                onPress={() => {
+                  setLow(false);
+                  setModerate(false);
+                  setHigh(false);
+                  setVeryhigh(!veryhigh);
+                }}
+              />
+            </>
           ),
         },
         // page 3
@@ -114,53 +151,27 @@ const OnboardingScreen = ({ navigation }) => {
           subtitle: (
             <>
               <View style={{ display: "flex", flexDirection: "row" }}>
-                <TouchableOpacity onPress={() => setGender("Male")}>
+                <TouchableOpacity>
                   <Image
-                    style={{
-                      height: 125,
-                      width: 125,
-                      borderRadius: 100,
-                    }}
+                    style={{ height: 125, width: 125, borderRadius: 100 }}
                     source={require("../assets/Man-thinking-pana.png")}
                   />
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginTop: 10,
-                      justifyContent: "center",
-                      alignItems: "center",
+                  <CheckBox
+                    title="Very High"
+                    checked={veryhigh}
+                    containerStyle={{
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
                     }}
-                  >
-                    {gender === "Male" ? (
-                      <Icon type="ionicon" name="checkmark" />
-                    ) : null}
-                    <Text>Male</Text>
-                  </View>
+                    onPress={() => {}}
+                  />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={{ marginLeft: 20 }}
-                  onPress={() => setGender("Female")}
-                >
+                <TouchableOpacity>
                   <Image
                     style={{ height: 125, width: 125, borderRadius: 100 }}
                     source={require("../assets/Woman-thinking-pana.png")}
                   />
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginTop: 10,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    {gender === "Female" ? (
-                      <Icon type="ionicon" name="checkmark" />
-                    ) : null}
-                    <Text>Female</Text>
-                  </View>
+                  <Text>Female</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -170,51 +181,19 @@ const OnboardingScreen = ({ navigation }) => {
         {
           backgroundColor: "#FCE38A",
           title: "What's your Height",
-          subtitle: (
-            <KeyboardAvoidingView
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "flex-end",
-                justifyContent: "space-between",
-                width: "23%",
-                marginBottom: 60,
-              }}
-            >
-              <TextInput
-                style={{ height: 50 }}
-                mode="outlined"
-                value={height}
-                onChangeText={(text) => setHeight(text)}
-              />
-              <Text h4>cm</Text>
-            </KeyboardAvoidingView>
-          ),
+          subtitle: <></>,
         },
         // page 5
         {
+          backgroundColor: "#AA96DA",
+          title: "What's your BirthDate",
+          subtitle: <></>,
+        },
+        // page 6
+        {
           backgroundColor: "#EAFFD0",
           title: "What's your Weight",
-          subtitle: (
-            <KeyboardAvoidingView
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "flex-end",
-                justifyContent: "space-between",
-                width: "23%",
-                marginBottom: 60,
-              }}
-            >
-              <TextInput
-                style={{ height: 50 }}
-                mode="outlined"
-                value={weight}
-                onChangeText={(text) => setWeight(text)}
-              />
-              <Text h4>kg</Text>
-            </KeyboardAvoidingView>
-          ),
+          subtitle: <></>,
         },
       ]}
     />
@@ -225,6 +204,8 @@ export default OnboardingScreen;
 
 const styles = StyleSheet.create({
   checkBox: {
+    backgroundColor: "#3FC1C9",
+    borderRadius: 70,
     width: 250,
   },
 });

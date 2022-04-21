@@ -1,54 +1,12 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useEffect } from "react";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/Header";
 import { ListItem, Icon, colors, Text } from "react-native-elements";
 import { VictoryPie } from "victory-native";
-import { auth, db } from "../firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 const HomeScreen = ({ navigation }) => {
-  var Calories = [];
-
-  useEffect(() => {
-    const profile = async () => {
-      try {
-        const breakfast = await getDocs(
-          collection(db, "food", auth.currentUser.uid, "breakfast")
-        );
-        const lunch = await getDocs(
-          collection(db, "food", auth.currentUser.uid, "lunch")
-        );
-        const dinner = await getDocs(
-          collection(db, "food", auth.currentUser.uid, "dinner")
-        );
-        breakfast.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          const { date, nutrients } = doc.data();
-          // console.log(doc.data(), "DATE", date);
-          Calories.push(nutrients.ENERC_KCAL.quantity);
-        });
-        dinner.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          const { date, nutrients } = doc.data();
-          // console.log(doc.data(), "DATE", date);
-          Calories.push(nutrients.ENERC_KCAL.quantity);
-        });
-        lunch.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          const { date, nutrients } = doc.data();
-          // console.log(doc.data(), "DATE", date);
-          Calories.push(nutrients.ENERC_KCAL.quantity);
-        });
-        console.log(Calories.reduce((partialSum, a) => partialSum + a, 0));
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    profile();
-  }, []);
-
   const list2 = [
     {
       name: "Breakfast",
@@ -88,12 +46,6 @@ const HomeScreen = ({ navigation }) => {
     },
   ];
 
-  useEffect(() => {
-    console.log(auth.currentUser.uid);
-  }, []);
-
-  // `${breakfastCal.reduce((partialSum, a) => partialSum + a, 0)}`
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -104,25 +56,20 @@ const HomeScreen = ({ navigation }) => {
           endAngle={-90}
           colorScale={["tomato", "orange", "gold", "cyan", "navy"]}
           data={[
-            {
-              x: "breakfast",
-              y: "",
-            },
-            {
-              x: "Lunch",
-              y: "",
-            },
-            {
-              x: "dinner",
-              y: "",
-            },
+            { x: "", y: 35 },
+            { x: "", y: 40 },
+            { x: "", y: 55 },
           ]}
         />
       </View>
       <ScrollView style={styles.list}>
         <View style={styles.list}>
           {list2.map((l, i) => (
-            <ListItem key={i} onPress={() => navigation.navigate(`${l.name}`)}>
+            <ListItem
+              key={i}
+              bottomDivider
+              onPress={() => navigation.navigate(`${l.name}`)}
+            >
               <ListItem.Content>
                 <ListItem.Title style={{ color: "red" }}>
                   {l.name}

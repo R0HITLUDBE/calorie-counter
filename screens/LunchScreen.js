@@ -1,11 +1,19 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Avatar, Icon, ListItem, SearchBar } from "react-native-elements";
+import {
+  Avatar,
+  Icon,
+  Input,
+  ListItem,
+  Overlay,
+  SearchBar,
+  SpeedDial,
+} from "react-native-elements";
 import Axios from "axios";
 import { Dropdown } from "react-native-element-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { collection, getDocs, addDoc, Timestamp } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const data = [
   { label: "Alcohol-free", value: "alcohol-free" },
@@ -33,8 +41,6 @@ const LunchScreen = () => {
   const [healthOption, setHealthOption] = useState(null);
   const [selected, setSelected] = useState();
   const [query, setQuery] = useState("");
-  const [foodId, setFoodId] = useState("");
-  const [nutrients, setNutrients] = useState();
 
   // const url = `https://api.edamam.com/api/food-database/v2/parser?ingr=${query}&app_id=${APP_ID}&app_key=${APP_KEY}&cuisineType=Indian&more=True`;
 
@@ -51,75 +57,35 @@ const LunchScreen = () => {
     },
   };
 
-  var ingredientsOptions = {
-    method: "POST",
-    url: "https://api.edamam.com/api/food-database/v2/nutrients",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-    },
-    params: {
-      app_id: APP_ID,
-      app_key: APP_KEY,
-    },
-    data: {
-      ingredients: [
-        {
-          quantity: 1,
-          foodId: foodId,
-        },
-      ],
-    },
-  };
-
   const getFoodInfo = async () => {
     var result = await Axios.request(options)
       .then((result) => {
         setBreakfast(result.data.hints);
-        // console.log(result.data.hints);
+        console.log(result.data.hints);
       })
       .catch((error) => console.error(error));
   };
 
-  const getNutrientsInfo = async (response) => {
-    var result = await Axios.request(ingredientsOptions)
-      .then((result) => {
-        setNutrients(result.data.totalNutrients);
-        console.log("nutrients", result.data);
-      })
-      .then(async () => {
-        try {
-          const docRef = await addDoc(
-            collection(db, "food", auth.currentUser.uid, "lunch"),
-            {
-              label: response.food.label,
-              uri: response.food.image,
-              nutrients: nutrients,
-              date: Timestamp.fromDate(new Date()),
-            }
-          );
-          console.log("Document written with ID: ", docRef.id);
-        } catch (e) {
-          console.log(e);
-        }
-      })
-      .catch((e) => console.error(e));
-  };
+  // const addFood = async (food) => {
+  //   try {
+  //     const docRef = await addDoc(collection(db, "breakfast"), {});
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchbreakfast = async () => {
       try {
-        var breakfastList = [];
-        const querySnapshot = await getDocs(
-          collection(db, "food", auth.currentUser.uid, "lunch")
-        );
+        const breakfastList = [];
+        const querySnapshot = await getDocs(collection(db, "Lunch"));
         querySnapshot.forEach((doc) => {
           console.log("doc data uri", doc.data().uri);
-          const { label, uri, nutrients } = doc.data();
+          const { label, uri, cal } = doc.data();
           breakfastList.push({
             label: label,
             uri: uri,
-            nutrients: nutrients.ENERC_KCAL.quantity.toFixed(2),
+            cal: cal,
           });
         });
         setSelected(breakfastList);
@@ -195,8 +161,16 @@ const LunchScreen = () => {
                       type="ionicon"
                       color="#517fa4"
                       onPress={async () => {
-                        setFoodId(response.food.foodId);
-                        getNutrientsInfo(response);
+                        try {
+                          const docRef = await addDoc(collection(db, "Lunch"), {
+                            label: response.food.label,
+                            uri: response.food.image,
+                            cal: response.food.nutrients.ENERC_KCAL.toFixed(2),
+                          });
+                          console.log("Document written with ID: ", docRef.id);
+                        } catch (e) {
+                          console.log(e);
+                        }
                       }}
                     />
                   </ListItem.Subtitle>
@@ -209,9 +183,7 @@ const LunchScreen = () => {
                   <Avatar source={{ uri: response.uri }} />
                   <ListItem.Content>
                     <ListItem.Title>{response.label}</ListItem.Title>
-                    <ListItem.Subtitle>
-                      {response.nutrients} kcal
-                    </ListItem.Subtitle>
+                    <ListItem.Subtitle>{response.cal} kcal</ListItem.Subtitle>
                   </ListItem.Content>
                 </ListItem>
               );

@@ -14,10 +14,6 @@ import { useContext, useEffect, useState } from "react";
 import { useAuth } from "./firebase";
 import LunchScreen from "./screens/LunchScreen";
 import { Icon } from "react-native-elements";
-import { AuthContext, AuthProvider } from "./components/AuthProvider";
-import BodyMeasurements from "./screens/BodyMeasurements";
-import Goals from "./screens/Goals";
-import RecipePage from "./components/RecipePage";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -46,11 +42,6 @@ const ProfileStackScreen = () => {
         name="Profile"
         component={ProfileScreen}
       />
-      <ProfileStack.Screen
-        name="Body Measurements"
-        component={BodyMeasurements}
-      />
-      <ProfileStack.Screen name="My Goals" component={Goals} />
     </ProfileStack.Navigator>
   );
 };
@@ -59,11 +50,6 @@ const RecipeStackScreen = () => {
   return (
     <RecipeStack.Navigator>
       <RecipeStack.Screen name="Recipes" component={RecipeScreen} />
-      <RecipeStack.Screen
-        options={{ headerShown: false }}
-        name="Recipe page"
-        component={RecipePage}
-      />
     </RecipeStack.Navigator>
   );
 };
@@ -107,35 +93,34 @@ export default function App() {
           <Tab.Screen name="Home" component={HomeStackScreen} />
           <Tab.Screen name="Recipe" component={RecipeStackScreen} />
           <Tab.Screen name="Profile" component={ProfileStackScreen} />
+          <Tab.Screen name="On" component={OnboardingScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     );
   else
     return (
-      <AuthProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            // screenOptions={globalScreenOption}
-            initialRouteName="Onboarding"
-          >
-            <Stack.Screen
-              name="Onboarding"
-              options={{ headerShown: false }}
-              component={OnboardingScreen}
-            />
-            <Stack.Screen
-              name="Login"
-              options={{ headerShown: false }}
-              component={LoginScreen}
-            />
-            <Stack.Screen
-              name="Register"
-              options={{ headerShown: false }}
-              component={RegisterScreen}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          // screenOptions={globalScreenOption}
+          initialRouteName="Login"
+        >
+          <Stack.Screen
+            name="Onboarding"
+            options={{ headerShown: false }}
+            component={OnboardingScreen}
+          />
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: false }}
+            component={LoginScreen}
+          />
+          <Stack.Screen
+            name="Register"
+            options={{ headerShown: false }}
+            component={RegisterScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
 }
 

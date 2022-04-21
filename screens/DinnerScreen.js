@@ -17,7 +17,6 @@ import {
   collection,
   getDocs,
   serverTimestamp,
-  Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -89,7 +88,7 @@ const DinnerScreen = () => {
   useEffect(() => {
     const fetchDinner = async () => {
       try {
-        let dinnerList = [];
+        const dinnerList = [];
         const querySnapshot = await getDocs(collection(db, "dinner"));
         querySnapshot.forEach((doc) => {
           // console.log("doc data uri", doc.data().uri);
@@ -181,10 +180,10 @@ const DinnerScreen = () => {
                           const docRef = await addDoc(
                             collection(db, "dinner"),
                             {
+                              timestamp: serverTimestamp(),
                               label: response.food.label,
                               uri: response.food.image,
                               nutrients: response.food.nutrients,
-                              timestamp: Timestamp.fromDate(new Date()),
                             }
                           );
                           console.log("Document written with ID: ", docRef.id);
